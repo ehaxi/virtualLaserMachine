@@ -32,9 +32,8 @@ class QZoomStageView(QWidget):
         self.set_zoom(1)
 
     def showEvent(self, e) -> None:
-        self.__cameraPosition = QPointF(0,
-                                        0)  # QPointF(self.frameSize().width() * 0.5, self.frameSize().height() * 0.5)
-        self.set_zoom(5)
+        self.__cameraPosition = QPointF(10, 40)  # QPointF(self.frameSize().width() * 0.5, self.frameSize().height() * 0.5)
+        self.set_zoom(10)
 
     def setStageLimits(self, limits: QSize):
         self.stageLimits = limits
@@ -136,9 +135,12 @@ class QZoomStageView(QWidget):
     def clamp(self, value, minvalue, maxvalue) -> float:
         return max(minvalue, min(value, maxvalue))
 
+    def is_change(self):
+        pos = LaserMachine()
+
     def paintEvent(self, e: QPaintEvent):
         painter = QPainter(self)
-        painter.fillRect(e.rect(), Qt.GlobalColor.darkBlue)
+        painter.fillRect(e.rect(), QColor(0,33,55))
         painter.save()
         matrix = QTransform()
         matrix.scale(self.__zoom, self.__zoom)  # инвертируем для привычной сетки осей
@@ -146,7 +148,7 @@ class QZoomStageView(QWidget):
         painter.setWorldMatrixEnabled(True)
         painter.setWorldTransform(matrix, False)
         painter.setClipping(False)
-        painter.setPen(QPen(Qt.GlobalColor.darkGray, 2.0 / self.__zoom))
+        painter.setPen(QPen(QColor(0,123,168), 2.0 / self.__zoom))
         inverted, result = matrix.inverted()
         world_rect = inverted.mapRect(self.rect().toRectF())
         verticalBoundsTop = QPointF(0, world_rect.top())
@@ -156,7 +158,7 @@ class QZoomStageView(QWidget):
         painter.drawLine(verticalBoundsTop, verticalBoundsBottom)  # vertical
         painter.drawLine(horizontalBoundsLeft, horizontalBoundsRight)  # horizontal
 
-        painter.setPen(QPen(Qt.GlobalColor.darkGray, 1.0 / self.__zoom))
+        painter.setPen(QPen(QColor(0,123,168), 1.0 / self.__zoom))
 
         max_h_limit = min(self.stageLimits.width(), world_rect.right())
         min_h_limit = max(0, world_rect.left())
@@ -166,30 +168,37 @@ class QZoomStageView(QWidget):
 
         font.setPointSizeF(12 / self.__zoom if self.__zoom > 1 else 12)
         painter.setFont(font)
-        x = 0
+        x = -500
         while x <= max_h_limit:  # vertical lines
-            start = QPointF(x, min_v_limit)
-            end = QPointF(x, max_v_limit)
+            start = QPointF(x, -500)
+            end = QPointF(x, 500)
             painter.drawLine(start, end)
 
             text = QStaticText(x.__str__())
             if x == 0:
-                painter.drawStaticText(QPointF(x + 5.0 / self.__zoom, 0), text)
+                painter.drawStaticText(QPointF(x - 30.0 / (self.__zoom * 10), 0), text)
             else:
-                painter.drawStaticText(QPointF(x - text.size().width() * 0.5 / self.__zoom, 0), text)
+                painter.drawStaticText(QPointF(x - text.size().width() * 0.5 / (self.__zoom * 10), 0), text)
             x += self.__grid_size_ws
 
-        y = 0
+        y = 500
         while y >= max_v_limit:
-            start = QPointF(min_h_limit, y)
-            end = QPointF(max_h_limit, y)
+            start = QPointF(-500, y)
+            end = QPointF(500, y)
             painter.drawLine(start, end)
+
+            text = QStaticText((-y).__str__())
+            if y != 0:
+                painter.drawStaticText(QPointF(-text.size().width() * 17.5 / (self.__zoom * 10),
+                                               y - text.size().width() * 0.5 / (self.__zoom * 10)), text)
             y -= self.__grid_size_ws
+
+
 
         marker_size = int(max(1, 10 // self.__zoom))
 
-        for p in self.points:
-            painter.fillRect(p.x(), p.y(), int(1), int(1), Qt.GlobalColor.yellow)
+        # for p in self.points:
+        #     painter.fillRect(p.x(), p.y(), int(1), int(1), Qt.GlobalColor.yellow)
 
         painter.translate(-0.5 * marker_size, -0.5 * marker_size)
         print(f"mp: {self.__markerPoint}")
@@ -204,5 +213,7 @@ class QZoomStageView(QWidget):
         painter.restore()
         painter.setPen(QPen(Qt.GlobalColor.white, 2))
         painter.drawStaticText(QPointF(5, 5), QStaticText(f"Zoom: {self.__zoom : .2f}"))
-        painter.drawStaticText(QPointF(5, 20), QStaticText(f"Marker position: x = , y = "))
+
+
         # painter.drawStaticText(QPointF(5, 20), QStaticText(f"Marker position: x = {xpos}, y = {ypos}"))
+

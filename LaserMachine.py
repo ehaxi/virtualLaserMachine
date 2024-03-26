@@ -60,6 +60,7 @@ class LaserMachine():
         self.__lastTimerTick = time.time()
         print(self.__position)
         if self.__isMoving and self.__lastTimerTick > self.__nextMoveTime:
+            self.step = False
             self.__doMove()
             self.__nextMoveTime = self.__lastTimerTick + step_time
 
@@ -72,24 +73,37 @@ class LaserMachine():
         dx = int(x1-x0)
         dy = int(y1-y0)
 
-        if dx == 0:
-            ystep = 1 if dy > 0 else -1
-            y = y0 + ystep
-            x = x0
-
-        if dy == 0:
-            xstep = 1 if dx > 0 else -1
-            x = x0 + xstep
-            y = y0
-
-        if dx != 0 and dy != 0:
-            xstep = 1 if dx > 0 else -1
-            ystep = 1 if dy > 0 else -1
-
-            x = x0 + xstep
-            y = y0 + ystep
-
-        self.__setPosition(x, y)
         if self.__position == self.__destination:
             self.__setIsMoving(False)
 
+        else:
+            flag = False
+            if dx == 0 or dy == 0:
+                if dx == 0:
+                    ystep = 1 if dy > 0 else -1
+                    y = y0 + ystep
+                    x = x0
+                    self.__setPosition(x, y)
+
+                if dy == 0:
+                    xstep = 1 if dx > 0 else -1
+                    x = x0 + xstep
+                    y = y0
+                    self.__setPosition(x, y)
+            else:
+                if dy != 0:
+                    ystep = 1 if dy > 0 else -1
+                    y = y0 + ystep
+                    self.__setPosition(x0, y)
+
+                    if dx != 0:
+                        xstep = 1 if dx > 0 else -1
+                        x = x0 + xstep
+                        self.__setPosition(x, y0)
+
+            if self.__position == self.__destination:
+                self.__setIsMoving(False)
+
+        # self.__setPosition(x, y)
+        # if self.__position == self.__destination:
+        #     self.__setIsMoving(False)
