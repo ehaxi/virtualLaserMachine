@@ -53,8 +53,8 @@ class MainWindow(QMainWindow):
     def init_image(self, size: QSize):
         self.image = QImage(size.width(), size.height(), QImage.Format.Format_ARGB32)
 
-def dest_changed():
-    print(f"destination changed to {machine.getDestination()}")
+# def dest_changed():
+#     print(f"destination changed to {machine.getDestination()}")
 
 if __name__ == "__main__":
     app = QApplication([])
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     window.show()
     machine = LaserMachine()
     window.connectMachine(machine)
-    machine.destinationChanged.changed.connect(dest_changed)
+    # machine.destinationChanged.changed.connect(dest_changed)
     machine.setDestination(0, 0)
     sys.exit(app.exec())
 

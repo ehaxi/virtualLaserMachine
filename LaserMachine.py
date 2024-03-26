@@ -2,7 +2,7 @@ import time
 from math import sqrt
 
 from PyQt6.QtCore import QTimer, QPoint, pyqtSignal, QObject, QSize, QPointF
-from PyQt6.QtGui import QAction, QPainter, QStaticText
+from PyQt6.QtGui import QAction, QPainter, QStaticText, QKeyEvent
 from PyQt6.QtWidgets import QWidget, QMainWindow, QLabel
 
 from MarkerState import MarkerState
@@ -34,6 +34,9 @@ class LaserMachine():
             self.__timer.stop()
         self.isMovingChanged.changed.emit()
 
+    def keyPressEvent(self, event: QKeyEvent):
+        self.__maxSpeed = int(event.text())
+
     def getLaserState(self) -> MarkerState: return self.__laserState
 
     def getPosition(self) -> QPoint: return self.__position
@@ -58,7 +61,7 @@ class LaserMachine():
         step_time = 1.0 / self.__maxSpeed
         #deltaTime = time.time() - self.__lastTimerTick
         self.__lastTimerTick = time.time()
-        print(self.__position)
+        # print(self.__position)
         if self.__isMoving and self.__lastTimerTick > self.__nextMoveTime:
             self.step = False
             self.__doMove()
@@ -104,6 +107,5 @@ class LaserMachine():
             if self.__position == self.__destination:
                 self.__setIsMoving(False)
 
-        # self.__setPosition(x, y)
-        # if self.__position == self.__destination:
-        #     self.__setIsMoving(False)
+
+

@@ -30,6 +30,7 @@ class QZoomStageView(QWidget):
         self.__holdTimer.timeout.connect(self.__hold_timer_timeout)
         self.points = []
         self.set_zoom(1)
+        self.pos_x = 0
 
     def showEvent(self, e) -> None:
         self.__cameraPosition = QPointF(10, 40)  # QPointF(self.frameSize().width() * 0.5, self.frameSize().height() * 0.5)
@@ -176,9 +177,9 @@ class QZoomStageView(QWidget):
 
             text = QStaticText(x.__str__())
             if x == 0:
-                painter.drawStaticText(QPointF(x - 30.0 / (self.__zoom * 10), 0), text)
+                painter.drawStaticText(QPointF(x - 30.0 / (self.__zoom * 15), 0), text)
             else:
-                painter.drawStaticText(QPointF(x - text.size().width() * 0.5 / (self.__zoom * 10), 0), text)
+                painter.drawStaticText(QPointF(x - text.size().width() * 0.5 / (self.__zoom * 15), 0), text)
             x += self.__grid_size_ws
 
         y = 500
@@ -189,13 +190,13 @@ class QZoomStageView(QWidget):
 
             text = QStaticText((-y).__str__())
             if y != 0:
-                painter.drawStaticText(QPointF(-text.size().width() * 17.5 / (self.__zoom * 10),
-                                               y - text.size().width() * 0.5 / (self.__zoom * 10)), text)
+                painter.drawStaticText(QPointF(-text.size().width() * 17.5 / (self.__zoom * 15),
+                                               y - text.size().width() * 0.5 / (self.__zoom * 15)), text)
             y -= self.__grid_size_ws
 
 
 
-        marker_size = int(max(1, 10 // self.__zoom))
+        marker_size = int(max(1, 10 // (self.__zoom * 20)))
 
         # for p in self.points:
         #     painter.fillRect(p.x(), p.y(), int(1), int(1), Qt.GlobalColor.yellow)
@@ -214,6 +215,8 @@ class QZoomStageView(QWidget):
         painter.setPen(QPen(Qt.GlobalColor.white, 2))
         painter.drawStaticText(QPointF(5, 5), QStaticText(f"Zoom: {self.__zoom : .2f}"))
 
-
-        # painter.drawStaticText(QPointF(5, 20), QStaticText(f"Marker position: x = {xpos}, y = {ypos}"))
+        pos_x = self.__markerPoint.x()
+        pos_y = self.__markerPoint.y()
+        painter.drawStaticText(QPointF(5, 20), QStaticText(f"Marker position: x = {pos_x}, y = {pos_y}"))
+        painter.drawStaticText(QPointF(5, 35), QStaticText(f"State: {str(self.__markerState)[12:]}"))
 
