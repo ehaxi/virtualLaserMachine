@@ -80,30 +80,23 @@ class LaserMachine():
             self.__setIsMoving(False)
 
         else:
-            flag = False
-            if dx == 0 or dy == 0:
-                if dx == 0:
-                    ystep = 1 if dy > 0 else -1
-                    y = y0 + ystep
-                    x = x0
-                    self.__setPosition(x, y)
+            if dx == 0:
+                ystep = 1 if dy > 0 else -1
+                y = y0 + ystep
+                x = x0
 
-                if dy == 0:
-                    xstep = 1 if dx > 0 else -1
-                    x = x0 + xstep
-                    y = y0
-                    self.__setPosition(x, y)
-            else:
-                if dy != 0:
-                    ystep = 1 if dy > 0 else -1
-                    y = y0 + ystep
-                    self.__setPosition(x0, y)
+            if dy == 0:
+                xstep = 1 if dx > 0 else -1
+                x = x0 + xstep
+                y = y0
 
-                    if dx != 0:
-                        xstep = 1 if dx > 0 else -1
-                        x = x0 + xstep
-                        self.__setPosition(x, y0)
+            if dy != 0 and dx != 0:
+                ystep = 1 if dy > 0 else -1
+                xstep = 1 if dx > 0 else -1
+                y = y0 + ystep
+                x = x0 + xstep
 
+            self.__setPosition(x,y)
             if self.__position == self.__destination:
                 self.__setIsMoving(False)
 
